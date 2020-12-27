@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"time"
 
-	gosteamauth "../src"
+	gosteamauth "github.com/TeddiO/GoSteamAuth/src"
 )
 
 func main() {
