@@ -20,6 +20,8 @@ func init() {
 	steamRx = regexp.MustCompile(`https://steamcommunity\.com/openid/id/(\d+)`)
 }
 
+// StringMapToString is a utility function that aims to efficiently build a query string
+// with a tiny footprint. theMap is expected to be a map of key strings with a value type of a string.
 func StringMapToString(theMap map[string]string) string {
 
 	mapLength := len(theMap)
@@ -43,7 +45,11 @@ func StringMapToString(theMap map[string]string) string {
 	return builder.String()
 }
 
-func ConstructURL(responsePath string) string {
+// BuildQueryString is more or less building up a query string to be passed when reaching
+// Steam's openid 2.0 provider (or technically any openid 2.0 provider). We only care
+// that the Scheme is either http or https. Any other validation should really be done
+// before using this function.
+func BuildQueryString(responsePath string) string {
 
 	if responsePath[0:4] != "http" {
 		log.Fatal("http was not found in the responsePath!")
@@ -67,6 +73,12 @@ func ConstructURL(responsePath string) string {
 	return StringMapToString(openIdParameters)
 }
 
+// ValidateResponse is the real chunk of work that goes on. When the client comes back to our site
+// we need to take what they give us in the query string and hit up the openid 2.0 provider directly
+// to verify what we're being provided with is well, valid.
+// If we end up with "is_valid:true" response from the Steam then isValid will always return true.
+// In any other situation (credential failure, error etc) isValid will always return false.
+// Takes a generic map to be agnostic among various routers that exist out there
 func ValidateResponse(results map[string]string) (steamID64 string, isValid bool, err error) {
 
 	openIdValidation := map[string]string{
@@ -86,7 +98,11 @@ func ValidateResponse(results map[string]string) (steamID64 string, isValid bool
 		}
 	}
 
-	urlObj, _ := url.Parse(provider)
+	urlObj, err := url.Parse(provider)
+	if err != nil {
+		return "", false, err
+	}
+
 	urlObj.RawQuery = StringMapToString(openIdValidation)
 
 	httpClient := &http.Client{
@@ -112,13 +128,22 @@ func ValidateResponse(results map[string]string) (steamID64 string, isValid bool
 	return "", false, nil
 }
 
-func RedirectClient(response http.ResponseWriter, request *http.Request, returnPath string) {
+// RedirectClient is a helper function that does the redirection to Steam with the
+// correct properties on our behalf. Pass it the appropriate http request / response objects
+// alongside the queryString and it'll get the user to the right place
+func RedirectClient(response http.ResponseWriter, request *http.Request, queryString string) {
+	returnUrlObject, _ := url.Parse(provider)
+	returnUrlObject.RawQuery = queryString
+
 	response.Header().Add("Content-Type", "application/x-www-form-urlencoded")
-	http.Redirect(response, request, fmt.Sprintf("%s?%s", provider, returnPath), 303)
+	http.Redirect(response, request, returnUrlObject.String(), 303)
 	return
 }
 
-// Utility function
+// Until generics come out, ValuesToMap is a boilerplate function designed to convert
+// a Values typed map into a generic map. We can't guarantee that everyone is using net/http so
+// an agnostic approach works nicer here. Reflection could be used instead but that really seems like
+// a poor bandaid for the real issue.
 func ValuesToMap(fakeMap url.Values) map[string]string {
 	returnMap := map[string]string{}
 	for k, v := range fakeMap {
