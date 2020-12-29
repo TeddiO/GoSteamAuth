@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/TeddiO/GoSteamAuth)](https://goreportcard.com/report/github.com/TeddiO/GoSteamAuth)
 # GoSteamAuth
 A small set of utility functions to quickly process Steam OpenID 2.0 logins.
 Cousin to the Python library designed to do the same thing: [pySteamSignIn](https://github.com/TeddiO/pySteamSignIn)

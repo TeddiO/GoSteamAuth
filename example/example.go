@@ -26,6 +26,9 @@ func main() {
 	log.Fatal(server.ListenAndServe())
 }
 
+// ExamplePage is just your average default page handler. In this example
+// We're just using the one liner to redirect the client and at the same time notify
+// the openid provider (Steam) where to return us.
 func ExamplePage(resp http.ResponseWriter, req *http.Request) {
 	queryString := req.URL.Query()
 
@@ -43,10 +46,12 @@ func ExamplePage(resp http.ResponseWriter, req *http.Request) {
 
 }
 
+// ProcessSteamLogin is where the real magic happens in terms of validation.
+// As long as isValid is true we should always be able to trust the SteamID64 returned.
 func ProcessSteamLogin(resp http.ResponseWriter, req *http.Request) {
 	queryString, _ := url.ParseQuery(req.URL.RawQuery)
 
-	// Lack of generics means we're joining to transform the queryString (Type: Values) in to a Map.
+	// Lack of generics means we're joining to transform the queryString (Type: Values) in to a generic map.
 	queryMap := gosteamauth.ValuesToMap(queryString)
 
 	steamID64, isValid, err := gosteamauth.ValidateResponse(queryMap)
@@ -54,6 +59,9 @@ func ProcessSteamLogin(resp http.ResponseWriter, req *http.Request) {
 		fmt.Fprintf(resp, "Failed to log in\nError: %s", err)
 		return
 	}
+
+	// The below is purely for demonstrative purposes, typically you would move the
+	// client on away from this page, set cookies / sessions and so on.
 
 	if isValid {
 		fmt.Fprintf(resp, "Successfully logged in!\nSteamID: %s", steamID64)

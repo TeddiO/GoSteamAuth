@@ -140,7 +140,7 @@ func RedirectClient(response http.ResponseWriter, request *http.Request, querySt
 	return
 }
 
-// Until generics come out, ValuesToMap is a boilerplate function designed to convert
+// ValuesToMap is a boilerplate function until generics come out, designed to convert
 // a Values typed map into a generic map. We can't guarantee that everyone is using net/http so
 // an agnostic approach works nicer here. Reflection could be used instead but that really seems like
 // a poor bandaid for the real issue.
