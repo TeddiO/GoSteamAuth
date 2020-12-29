@@ -30,7 +30,7 @@ func ExamplePage(resp http.ResponseWriter, req *http.Request) {
 	queryString := req.URL.Query()
 
 	if queryString.Get("login") == "true" {
-		gosteamauth.RedirectClient(resp, req, gosteamauth.ConstructURL("http://localhost:8080/process"))
+		gosteamauth.RedirectClient(resp, req, gosteamauth.BuildQueryString("http://localhost:8080/process"))
 		return
 	}
 

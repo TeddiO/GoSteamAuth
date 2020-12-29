@@ -13,7 +13,7 @@ Assuming you're using the typical `net/http` package, then the entire process is
 
 ```go
 func ExamplePage(response http.ResponseWriter, request *http.Request) {
-    gosteamauth.RedirectClient(response, request, gosteamauth.ConstructURL("http://localhost:8080/process"))
+    gosteamauth.RedirectClient(response, request, gosteamauth.BuildQueryString("http://localhost:8080/process"))
     return
 }
 ```
