@@ -6,8 +6,9 @@ Cousin to the Python library designed to do the same thing: [pySteamSignIn](http
 Similar to why the Python edition was wrote there's no straightforwards Steam authentication flow for Go, so this exists to fulfil the same purpose. Another language, same idea!
 
 ## Installing
+GoSteamAuth assumes that you're using [module aware-mode](https://blog.golang.org/go116-module-changes) so any importing errors found related to `GO111MODULE=off` should *not* be reported.
 
-To install: `go get github.com/TeddiO/GoSteamAuth/src`
+To install: `go install github.com/TeddiO/GoSteamAuth/src`
 ## Authentication
 
 Assuming you're using the typical `net/http` package, then the entire process is effectively a one-liner:
