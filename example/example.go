@@ -51,7 +51,8 @@ func ExamplePage(resp http.ResponseWriter, req *http.Request) {
 func ProcessSteamLogin(resp http.ResponseWriter, req *http.Request) {
 	queryString, _ := url.ParseQuery(req.URL.RawQuery)
 
-	// Lack of generics means we're joining to transform the queryString (Type: Values) in to a generic map.
+	// Due to ParseQuery() returning a url.Values in form map[string][]string we're going to
+	// convert that data structure to map[string]string so we can validate.
 	queryMap := gosteamauth.ValuesToMap(queryString)
 
 	steamID64, isValid, err := gosteamauth.ValidateResponse(queryMap)

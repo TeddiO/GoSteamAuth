@@ -78,7 +78,7 @@ func BuildQueryString(responsePath string) string {
 // to verify what we're being provided with is well, valid.
 // If we end up with "is_valid:true" response from the Steam then isValid will always return true.
 // In any other situation (credential failure, error etc) isValid will always return false.
-// Takes a generic map to be agnostic among various routers that exist out there
+// Takes a map[string]string to be agnostic among various http clients that exist out there
 func ValidateResponse(results map[string]string) (steamID64 string, isValid bool, err error) {
 
 	openIdValidation := map[string]string{
@@ -140,10 +140,9 @@ func RedirectClient(response http.ResponseWriter, request *http.Request, querySt
 	return
 }
 
-// ValuesToMap is a boilerplate function until generics come out, designed to convert
-// a Values typed map into a generic map. We can't guarantee that everyone is using net/http so
-// an agnostic approach works nicer here. Reflection could be used instead but that really seems like
-// a poor bandaid for the real issue.
+// ValuesToMap is a boilerplate function designed to convert the results of a url.Values
+// in to a readable map[string]string for ValidateResponse.
+// We don't get duplicate query keys supplied normally - but we'll always take the first one anyways
 func ValuesToMap(fakeMap url.Values) map[string]string {
 	returnMap := map[string]string{}
 	for k, v := range fakeMap {
