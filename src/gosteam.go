@@ -55,7 +55,7 @@ func BuildQueryString(responsePath string) string {
 		log.Fatal("http was not found in the responsePath!")
 	}
 
-	if responsePath[5:5] != "s" {
+	if responsePath[4:5] != "s" {
 		log.Println("https isn't being used! Is this intentional?")
 	}
 
