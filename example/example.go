@@ -29,18 +29,18 @@ func main() {
 // ExamplePage is just your average default page handler. In this example
 // We're just using the one liner to redirect the client and at the same time notify
 // the openid provider (Steam) where to return us.
-func ExamplePage(resp http.ResponseWriter, req *http.Request) {
-	queryString := req.URL.Query()
+func ExamplePage(w http.ResponseWriter, r *http.Request) {
+	queryString := r.URL.Query()
 
 	if queryString.Get("login") == "true" {
-		gosteamauth.RedirectClient(resp, req, gosteamauth.BuildQueryString("http://localhost:8080/process"))
+		gosteamauth.RedirectClient(w, r, gosteamauth.BuildQueryString("http://localhost:8080/process"))
 		return
 	}
 
 	loadingTemplate := template.New("index.html")
 	loadingTemplate, _ = template.ParseFiles("index.html")
 
-	if err := loadingTemplate.Execute(resp, nil); err != nil {
+	if err := loadingTemplate.Execute(w, nil); err != nil {
 		fmt.Println(err)
 	}
 
@@ -48,8 +48,8 @@ func ExamplePage(resp http.ResponseWriter, req *http.Request) {
 
 // ProcessSteamLogin is where the real magic happens in terms of validation.
 // As long as isValid is true we should always be able to trust the SteamID64 returned.
-func ProcessSteamLogin(resp http.ResponseWriter, req *http.Request) {
-	queryString, _ := url.ParseQuery(req.URL.RawQuery)
+func ProcessSteamLogin(w http.ResponseWriter, r *http.Request) {
+	queryString, _ := url.ParseQuery(r.URL.RawQuery)
 
 	// Due to ParseQuery() returning a url.Values in form map[string][]string we're going to
 	// convert that data structure to map[string]string so we can validate.
@@ -57,7 +57,9 @@ func ProcessSteamLogin(resp http.ResponseWriter, req *http.Request) {
 
 	steamID64, isValid, err := gosteamauth.ValidateResponse(queryMap)
 	if err != nil {
-		fmt.Fprintf(resp, "Failed to log in\nError: %s", err)
+		// You wouldn't typically raise the error to the end user like this, but for
+		// demonstration purposes we're attaching the error to the response
+		fmt.Fprintf(w, "Failed to log in\nError: %s", err)
 		return
 	}
 
@@ -65,9 +67,9 @@ func ProcessSteamLogin(resp http.ResponseWriter, req *http.Request) {
 	// client on away from this page, set cookies / sessions and so on.
 
 	if isValid {
-		fmt.Fprintf(resp, "Successfully logged in!\nSteamID: %s", steamID64)
+		fmt.Fprintf(w, "Successfully logged in!\nSteamID: %s", steamID64)
 	} else {
-		io.WriteString(resp, "Failed to log in.")
+		io.WriteString(w, "Failed to log in.")
 	}
 
 }
