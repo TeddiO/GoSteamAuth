@@ -18,7 +18,7 @@ const (
 	identifierSel = "http://specs.openid.net/auth/2.0/identifier_select"
 )
 
-var HTTPTimeout = 10 * time.Second
+var HTTPTimeout = 15 * time.Second
 
 func init() {
 	if v := os.Getenv("STEAM_AUTH_HTTP_TIMEOUT"); v != "" {
