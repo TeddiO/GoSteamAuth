@@ -63,6 +63,9 @@ func BuildQueryString(responsePath string) string {
 // ValidateResponse is the real chunk of work that goes on. When the client comes back to our site
 // we need to take what they give us in the query string and hit up Steam directly
 // to verify what we're being provided with is valid.
+// If we end up with "is_valid:true" response from the Steam then isValid will always return true.
+// In any other situation (credential failure, error etc) isValid will always return false and we aim
+// to provide a descriptive error where possible.
 func ValidateResponse(results map[string]string) (steamID64 string, isValid bool, err error) {
 	values := url.Values{}
 	values.Set("openid.mode", "check_authentication")
