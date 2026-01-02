@@ -1,6 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/TeddiO/GoSteamAuth)](https://goreportcard.com/report/github.com/TeddiO/GoSteamAuth)
 # GoSteamAuth
-A small set of utility functions to quickly process Steam OpenID 2.0 logins.
+A small set of utility functions to quickly process OpenID 2.0 logins for Steam.
 Cousin to the Python library designed to do the same thing: [pySteamSignIn](https://github.com/TeddiO/pySteamSignIn)
 
 Similar to why the Python edition was wrote there's no straightforwards Steam authentication flow for Go, so this exists to fulfil the same purpose. Another language, same idea!
