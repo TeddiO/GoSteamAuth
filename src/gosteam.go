@@ -1,6 +1,7 @@
 package gosteamauth
 
 import (
+	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -100,18 +101,22 @@ func ValidateResponse(results map[string]string) (steamID64 string, isValid bool
 	}
 
 	if !strings.Contains(string(returnedBytes), "is_valid:true") {
-		return "", false, nil
+		return "", false, errors.New("openid validation failed: steam returned is_valid:false")
 	}
 
 	claimedID := results["openid.claimed_id"]
 	identity := results["openid.identity"]
 
-	if claimedID == "" || identity == "" || claimedID != identity {
-		return "", false, nil
+	if claimedID == "" || identity == "" {
+		return "", false, errors.New("openid validation failed: missing claimed_id or identity")
+	}
+
+	if claimedID != identity {
+		return "", false, errors.New("openid validation failed: claimed_id and identity mismatch")
 	}
 
 	if !strings.HasPrefix(claimedID, steamIDPrefix) {
-		return "", false, nil
+		return "", false, errors.New("openid validation failed: identifier is not a steam openid")
 	}
 
 	steamID := strings.TrimPrefix(claimedID, steamIDPrefix)

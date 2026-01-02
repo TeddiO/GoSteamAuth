@@ -110,7 +110,7 @@ func TestValidateResponse_IdentityMismatchFailsClosed(t *testing.T) {
 	if ok {
 		t.Fatalf("expected identity mismatch to fail closed")
 	}
-	if err != nil {
-		t.Fatalf("did not expect error on identity mismatch, got: %v", err)
+	if err == nil {
+		t.Fatalf("expected error on identity mismatch")
 	}
 }
