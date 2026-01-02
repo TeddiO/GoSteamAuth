@@ -103,7 +103,26 @@ func ValidateResponse(results map[string]string) (steamID64 string, isValid bool
 		return "", false, err
 	}
 
-	if !strings.Contains(string(returnedBytes), "is_valid:true") {
+	lines := strings.Split(string(returnedBytes), "\n")
+
+	steamSaysValid := false
+	for _, line := range lines {
+		if line == "" {
+			continue
+		}
+
+		parts := strings.SplitN(line, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		if parts[0] == "is_valid" && parts[1] == "true" {
+			steamSaysValid = true
+			break
+		}
+	}
+
+	if !steamSaysValid {
 		return "", false, errors.New("openid validation failed: steam returned is_valid:false")
 	}
 
